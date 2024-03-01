@@ -2,6 +2,7 @@ package com.cardosotv.quizai.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.security.JWTUtil;
@@ -34,6 +35,16 @@ public class Interceptor implements HandlerInterceptor{
         }
         // Continue processing the request
         return true;
+    }
+
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
+                    Object handler, Exception ex) throws Exception {
+        // Set the custom treatment if response has any error
+        if (ex != null){
+            HandleException.handleException(ex, response, "Response");
+        }
     }
 
 }

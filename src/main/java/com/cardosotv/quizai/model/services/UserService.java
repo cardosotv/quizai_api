@@ -13,12 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.cardosotv.quizai.error.NotFoundException;
-import com.cardosotv.quizai.error.UnauthorizedException;
 import com.cardosotv.quizai.model.entities.User;
 import com.cardosotv.quizai.model.repositories.UserRepository;
 import com.cardosotv.quizai.security.JWTUtil;
 import org.springframework.data.domain.Page;
-import com.cardosotv.quizai.error.*;
+
 
 @Service
 public class UserService {

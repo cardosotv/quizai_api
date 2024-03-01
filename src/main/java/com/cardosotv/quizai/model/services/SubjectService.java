@@ -24,6 +24,7 @@ public class SubjectService {
         this.subjectRepository = subjectRepository;
     }
 
+
     public List<Subject> getAllSubjects(int page, int size) {
         Page<Subject> subjectPage = this.subjectRepository.findAll(PageRequest.of(page, size));
         return subjectPage.getContent();

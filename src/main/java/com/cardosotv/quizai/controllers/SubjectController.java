@@ -58,9 +58,9 @@ public class SubjectController {
     @PostMapping
     public ResponseEntity<Subject> postSubject(@RequestBody @Valid Subject subject){
     //public ResponseEntity<Subject> postSubject(@RequestBody @Valid Subject subject, BindingResult bindingResult){
-        
+    
         // if (bindingResult.hasErrors()) {
-        //     throw new BadRequestException("Erro de Validação", subject);
+        //     throw new BadRequestException("Validation error", subject);
         // }
         
         try {

@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,9 @@ import com.cardosotv.quizai.security.JWTUtil;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    @Value("${com.cardoso.quizai.adminid}")
+    private String adminID;
+
     @Autowired
     private final UserService userService;
 
@@ -32,11 +36,13 @@ public class AuthController {
     public ResponseEntity<Object> getAuthorization(@RequestHeader("userId") String userID){
 
         // check if the user exists on database
-        User user = this.userService.getUserByID(UUID.fromString(userID));
+        if (!userID.equals(adminID)){
+            User user = this.userService.getUserByID(UUID.fromString(userID));
         
-        // if not return Unathorizated Exception
-        if(Objects.isNull(user)) {
-            throw new UnauthorizedException();
+            // if not return Unathorizated Exception
+            if(Objects.isNull(user)) {
+                throw new UnauthorizedException();
+            }
         }
         // if yes retorn the token as JWT Object
         String token = JWTUtil.generateToken(userID);

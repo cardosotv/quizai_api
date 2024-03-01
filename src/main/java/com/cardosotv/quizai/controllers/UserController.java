@@ -44,7 +44,7 @@ public class UserController {
     @Operation(summary = "Endpoind to GET all Users from database QuizAI."
          , description = "This endpoint retrieves the a list of users active.")
     @ApiResponse(responseCode = "200"
-                , description = "Found Users List."
+                , description = "Users found!"
                 , content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))})
     public ResponseEntity<List<User>> getAllUsers(@RequestParam(defaultValue = "0") int page
                                                 , @RequestParam(defaultValue = "10") int size
