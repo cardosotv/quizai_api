@@ -66,6 +66,21 @@ public class QuestionService {
         return mapToQuestionsDto(questions);
     }
 
+    public List<Question> listAllQuestionBySubEntity(UUID subjectId, int page, int size){
+
+        List<Question> questions;
+        try {
+            // Changed for return just active questions (logical delete)
+            // questions = this.questionRepository.findAll();
+            questions = this.questionRepository.findAllActivatedQuestions(); 
+            if (questions.size() == 0){
+                throw new NotFoundException("Question", subjectId);
+            }
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, subjectId, "Question");
+        }
+        return questions;
+    }
 
     // In charge of get the question by Id informed on client request
     public QuestionDTO getQuestionById(UUID questionId){

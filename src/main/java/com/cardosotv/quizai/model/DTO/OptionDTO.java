@@ -29,6 +29,7 @@ public class OptionDTO {
         this.isCorrect = isCorrect;
     } 
     
+    public OptionDTO() {}
 
     /**
      * @return UUID return the id
@@ -60,6 +61,7 @@ public class OptionDTO {
 
     /**
      * @return Boolean return the isCorrect
+     * https://towardsdev.com/data-transfer-object-dto-in-spring-boot-c00678cc5946
      */
     public Boolean isIsCorrect() {
         return isCorrect;

@@ -1,7 +1,5 @@
 package com.cardosotv.quizai.model.entities;
 
-
-
 import java.util.UUID;
 
 import jakarta.persistence.Column;

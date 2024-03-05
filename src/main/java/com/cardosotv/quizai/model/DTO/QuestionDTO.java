@@ -18,6 +18,7 @@ import lombok.Builder;
 
 /**
  * @author Tiago Cardoso on 01-03-2024
+ * https://towardsdev.com/data-transfer-object-dto-in-spring-boot-c00678cc5946
  */
 @SuppressWarnings("deprecation")
 @Data
@@ -36,6 +37,9 @@ public class QuestionDTO {
         this.question = question;
         this.options = options;
     }
+
+
+    public QuestionDTO() {}
 
 
     /**

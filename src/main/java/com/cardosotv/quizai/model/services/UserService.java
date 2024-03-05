@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.cardosotv.quizai.error.NotFoundException;
+import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.User;
 import com.cardosotv.quizai.model.repositories.UserRepository;
 import com.cardosotv.quizai.security.JWTUtil;
@@ -28,8 +29,12 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository){
+    @Autowired
+    private ModelMapper modelMapper; 
+
+    public UserService(UserRepository userRepository, ModelMapper modelMapper){
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -70,6 +75,23 @@ public class UserService {
 
         // if not return the user founded 
         return user;
+    }
+
+
+    @SuppressWarnings("null")
+    public UserDTO getUserByIdDTO(UUID userID){
+
+        // search for the user in database by parameter infomed
+        User user = this.userRepository.findById(userID).orElse(null);
+
+        // check if it's null
+        if(Objects.isNull(user)) { 
+            // if it is thrown the NotfoundException
+            throw new NotFoundException("User", userID);
+        }
+
+        // if not return the user founded 
+        return this.modelMapper.map(user, UserDTO.class);
     }
 
 
