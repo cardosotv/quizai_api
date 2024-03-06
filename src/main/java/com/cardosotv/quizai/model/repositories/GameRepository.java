@@ -14,3 +14,4 @@ public interface GameRepository extends JpaRepository<Game, UUID>{
     //https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
     public Page<Game> findByUserId(UUID userId, PageRequest pageRequest);
 }
+

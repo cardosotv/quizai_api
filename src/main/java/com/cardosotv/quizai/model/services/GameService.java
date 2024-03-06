@@ -163,8 +163,48 @@ public class GameService {
     }
 
 
+    // responsable for delivery to request all Games by ID 
+    public GameDTO getGameByID(UUID id) {
+
+        GameDTO result;
+        try {
+            // check if the Game exists by informed ID
+            @SuppressWarnings("null")
+            Game game = this.gameRepository.findById(id).orElse(null);
+            if(Objects.isNull(game)){
+                // If yes return the Not Found Exception
+                throw new NotFoundException("Games", null);
+            }
+            // If not map the games list for DTO model
+            result = modelMapper.map(game, GameDTO.class);
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, null, "Game");
+        } 
+        // return the result
+        return result;
+    }
 
 
+    // Responsable for delete the game and game question informed
+    @SuppressWarnings("null")
+    public void deleteGameByID(UUID gameID){
+        // Check if the game informed exists
+        Game game = this.gameRepository.findById(gameID).orElse(null);
+        try {
+            // If not return Not Found Exception
+            if (Objects.isNull(game)){
+                throw new NotFoundException("Delete Game", game);
+            }
+            // Get the question from this game
+            game.getQuestions().forEach(question -> this.gameQuestionsRepository.delete(question));
 
-
+            // If yes delete first the questions from this game
+            this.gameRepository.delete(game);
+            // After that delete the game 
+            
+        } catch (Throwable t) {
+            // If any error return the treated exceptio
+            throw HandleException.handleException(t, gameID, "Game/Delete");
+        }
+    }
 }

@@ -6,7 +6,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.model.DTO.GameDTO;
-import com.cardosotv.quizai.model.entities.Game;
 import com.cardosotv.quizai.model.services.GameService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -80,5 +81,34 @@ public class GameController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/{gameId}")
+    @Operation(summary = "Get request for Games by ID."
+    , description =  "Endpoint in charge of return the game by ID")
+    @ApiResponse(responseCode =  "200", description =  "Game found.")
+    public ResponseEntity<GameDTO> getAllGames( @PathVariable UUID gameId 
+                                    , @RequestHeader("token") String token){
+        GameDTO result;
+        try {
+            result = this.gameService.getGameByID(gameId);
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, token, "Games");
+        }
+        return ResponseEntity.ok(result);
+    }
 
+
+    @DeleteMapping("/{gameId}")
+    @Operation(summary = "Delete request for Games by ID."
+    , description =  "Endpoint in charge of delete the game by ID")
+    @ApiResponse(responseCode =  "200", description =  "Game deleted.")
+    public ResponseEntity<String> deleteGameByID( @PathVariable UUID gameId 
+                                    , @RequestHeader("token") String token){
+
+        try {
+            this.gameService.deleteGameByID(gameId);
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, token, "Games");
+        }
+        return ResponseEntity.ok("Delete request executed with success.");
+    }
 }
