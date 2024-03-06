@@ -7,9 +7,13 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
@@ -128,4 +132,39 @@ public class GameService {
         // If any error return the treated exception.
         return gameDTO;
     }
+
+    // responsable for delivery to request all Games as the especificate params
+    public List<GameDTO> getAllGames(UUID userID, int page, int size) {
+
+        List<GameDTO> result = new ArrayList<>();
+        Page<Game> games;
+        try {
+            // Get the games list
+            if(Objects.isNull(userID)){
+                games = this.gameRepository.findAll(PageRequest.of(page, size));
+            } else {
+                games = this.gameRepository.findByUserId(userID
+                                                    , PageRequest.of(page, size));
+            }
+            // Check if it is empty
+            if(games.getContent().size() == 0){
+                // If yes return the Not Found Exception
+                throw new NotFoundException("Games", null);
+            }
+            // If not map the games list for DTO model
+            for (Game game : games.getContent()) {
+                result.add(modelMapper.map(game, GameDTO.class));
+            }
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, null, "Game");
+        } 
+        // return the result
+        return result;
+    }
+
+
+
+
+
+
 }
