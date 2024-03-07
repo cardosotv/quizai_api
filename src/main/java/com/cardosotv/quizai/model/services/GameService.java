@@ -19,10 +19,12 @@ import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.DTO.GameDTO;
 import com.cardosotv.quizai.model.DTO.GameQuestionsDTO;
+import com.cardosotv.quizai.model.DTO.OptionDTO;
 import com.cardosotv.quizai.model.DTO.QuestionDTO;
 import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.Game;
 import com.cardosotv.quizai.model.entities.GameQuestions;
+import com.cardosotv.quizai.model.entities.Option;
 import com.cardosotv.quizai.model.entities.Question;
 import com.cardosotv.quizai.model.entities.Subject;
 import com.cardosotv.quizai.model.entities.User;
@@ -120,7 +122,7 @@ public class GameService {
 
             gameQuestionsDTO = gameDTO.getGameQuestions().stream().map(q -> new GameQuestionsDTO(q.getId()
                 , this.questionService.getQuestionById(q.getQuestion().getId())
-                , q.getTime(), q.getScore(), q.isIsCorrect())).collect(Collectors.toList());
+                , q.getTime(), q.getScore(), q.isIsCorrect(), null)).collect(Collectors.toList());
 
             gameDTO.setGameQuestions(gameQuestionsDTO);
             // gameDTO.setQuestions(new List<);
@@ -188,6 +190,7 @@ public class GameService {
     // Responsable for delete the game and game question informed
     @SuppressWarnings("null")
     public void deleteGameByID(UUID gameID){
+
         // Check if the game informed exists
         Game game = this.gameRepository.findById(gameID).orElse(null);
         try {
@@ -206,5 +209,92 @@ public class GameService {
             // If any error return the treated exceptio
             throw HandleException.handleException(t, gameID, "Game/Delete");
         }
+
+    }
+    
+    
+    public GameQuestionsDTO updateGameQuestions(GameQuestionsDTO gameQuestion
+                                , String token){
+        GameQuestions gameDB;
+        try {
+            // Check if the question informed exists 
+            gameDB = this.gameQuestionsRepository.findById(gameQuestion.getId()).orElse(null);
+            // If not return the Not Found Exception
+            if (Objects.isNull(gameDB)){
+                throw new NotFoundException("GameQuestion", gameQuestion);
+            }
+            // Get the userId from token to save the audit information
+            UUID userID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
+            
+            // Check if the answer is correct
+            if (Objects.isNull(gameQuestion.getAnswer())){
+                throw new NotFoundException("Answer is null.", gameQuestion);
+            }   
+            
+            Boolean isCorrect = checkIfAnswerIsCorrect(gameQuestion.getQuestion().getId()
+            , gameQuestion.getAnswer().getId());   
+            
+            Option answer = new Option();
+            answer.setIsCorrect(isCorrect);
+            answer.setId(gameQuestion.getAnswer().getId());
+            answer.setOption(gameQuestion.getAnswer().getOption());
+            
+            // Update gamequestion data 
+            gameDB.setUpdatedDate(new Date());
+            gameDB.setUpdatedBy(userID);
+            gameDB.setTime(gameQuestion.getTime());
+            gameDB.setScore(calculateScoreByAnswer(gameQuestion.getTime(), isCorrect));
+            gameDB.setIsCorrect(isCorrect);
+            gameDB.setAnswer(answer);
+    
+            // Save the updated object on database
+            gameDB = this.gameQuestionsRepository.save(gameDB);
+            
+        } catch (Throwable t) {
+            // TODO: handle exception
+            throw HandleException.handleException(t, gameQuestion, "GameQuestion/update");
+        }
+        // return with the DTO mapped
+        return modelMapper.map(gameDB, GameQuestionsDTO.class) ;
+    } 
+
+    private Boolean checkIfAnswerIsCorrect(UUID questionID, UUID optionID) {
+        // Inizializated the result 
+        Boolean result = false;
+        try {
+            // Get the question from the option informed
+            QuestionDTO question = this.questionService.getQuestionById(questionID);
+            // Check if the option informed is correct
+            for (OptionDTO optionDB : question.getOptions()) {
+                if (Objects.equals(optionDB.getId(), optionID)){
+                    result = optionDB.isIsCorrect();
+                }
+            }
+            // If any error return treated exception
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, optionID, "GameQuestion");
+        }
+        // Return the result True or False
+        return result;
+    }
+
+
+    /**Responsable for calculate the score for each question
+    // If the answer is correct win 50 pts
+    // The rest of the points are calculate in accord of the time
+    // for each 1 seg the score decrease 5 pts startinf with 50 pts
+    // The max score is 100 pts
+    **/
+    private int calculateScoreByAnswer(int time, Boolean isCorrect){
+
+        int result = 0;
+        try{
+            if (isCorrect) {
+                result = (result + 50) + (time/10)*5;
+            }
+        } catch(Throwable t) {
+            throw HandleException.handleException(t, time, "calculateScoreByAnswer");
+        }
+        return result;
     }
 }

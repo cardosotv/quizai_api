@@ -27,6 +27,9 @@ public class GameQuestions extends Default{
     private int score;
     @Column(name="is_correct")
     private boolean isCorrect;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_answered")
+    private Option answer;
 
 
     public GameQuestions(Date createdDate, UUID createdBy, Question question, int time
@@ -108,6 +111,21 @@ public class GameQuestions extends Default{
      */
     public void setIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
+    }
+
+
+    /**
+     * @return Option return the answer
+     */
+    public Option getAnswer() {
+        return answer;
+    }
+
+    /**
+     * @param answer the answer to set
+     */
+    public void setAnswer(Option answer) {
+        this.answer = answer;
     }
 
 }

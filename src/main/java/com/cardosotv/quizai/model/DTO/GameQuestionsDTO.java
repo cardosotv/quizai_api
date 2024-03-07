@@ -16,14 +16,17 @@ public class GameQuestionsDTO {
     private int time;
     private int score;
     private boolean isCorrect;
+    private OptionDTO answer;
 
 
-    public GameQuestionsDTO(UUID id, QuestionDTO question, int time,  int score, boolean isCorrect) {
+    public GameQuestionsDTO(UUID id, QuestionDTO question, int time,  int score
+                                , boolean isCorrect, OptionDTO answer) {
         this.id = id;
         this.question = question;
         this.time = time;
         this.score = score;
         this.isCorrect = isCorrect;
+        this.answer = answer;
     }
 
     public GameQuestionsDTO() {}
@@ -97,6 +100,21 @@ public class GameQuestionsDTO {
      */
     public void setIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
+    }
+
+
+    /**
+     * @return OptionDTO return the answer
+     */
+    public OptionDTO getAnswer() {
+        return answer;
+    }
+
+    /**
+     * @param answer the answer to set
+     */
+    public void setAnswer(OptionDTO answer) {
+        this.answer = answer;
     }
 
 }
