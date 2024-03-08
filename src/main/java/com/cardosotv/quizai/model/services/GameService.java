@@ -136,17 +136,18 @@ public class GameService {
     }
 
     // responsable for delivery to request all Games as the especificate params
-    public List<GameDTO> getAllGames(UUID userID, int page, int size) {
+    public List<GameDTO> getAllGames(UUID userID, Boolean ranking, int page, int size) {
 
         List<GameDTO> result = new ArrayList<>();
         Page<Game> games;
         try {
             // Get the games list
-            if(Objects.isNull(userID)){
-                games = this.gameRepository.findAll(PageRequest.of(page, size));
+            if(!Objects.isNull(userID)){
+                games = this.gameRepository.findByUserId(userID, PageRequest.of(page, size));
+            } else if(!Objects.isNull(ranking)) {
+                games = this.gameRepository.findTop10ByOrderByScoreDesc(PageRequest.of(page, size));
             } else {
-                games = this.gameRepository.findByUserId(userID
-                                                    , PageRequest.of(page, size));
+                games = this.gameRepository.findAll(PageRequest.of(page, size));
             }
             // Check if it is empty
             if(games.getContent().size() == 0){

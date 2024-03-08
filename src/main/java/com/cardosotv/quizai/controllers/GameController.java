@@ -78,12 +78,32 @@ public class GameController {
             } else {
                 id = UUID.fromString(userid.toString());
             }
-            result = this.gameService.getAllGames((UUID )id, page, size);
+            result = this.gameService.getAllGames((UUID )id, null, page, size);
         } catch (Throwable t) {
             throw HandleException.handleException(t, token, "Games");
         }
         return ResponseEntity.ok(result);
     }
+
+
+
+    @GetMapping("/top10")
+    @Operation(summary = "Get request for Top 10 Games."
+    , description =  "Endpoint in charge of return a list of top 10 games all times.")
+    @ApiResponse(responseCode =  "200", description =  "Top 10 Games List found.")
+    public ResponseEntity<List<GameDTO>> getTopTenGamesEver( 
+                                             @RequestHeader("token") String token){
+        
+        List<GameDTO> result;
+        try {
+            result = this.gameService.getAllGames(null, true, 0, 10);
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, token, "GamesTop10List");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
 
     @GetMapping("/{gameId}")
     @Operation(summary = "Get request for Games by ID."
