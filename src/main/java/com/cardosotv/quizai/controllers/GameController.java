@@ -24,6 +24,7 @@ import com.cardosotv.quizai.model.services.GameService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.websocket.server.PathParam;
 
 /**
  * @author Tiago Cardoso on 04-03-2024
@@ -127,6 +128,21 @@ public class GameController {
             result = this.gameService.updateGameQuestions(gameQuestion, token);
         } catch (Throwable t) {
             throw HandleException.handleException(t, gameQuestion, "GameQuestion");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{gameID}")
+    @Operation(summary = "Put request to finish the game."
+    , description =  "Endpoint in charge of end the game when the user finish of answer the questions.")
+    @ApiResponse(responseCode =  "200", description =  "Game Finished with Success.")
+    public ResponseEntity<GameDTO> finishGame( @PathVariable UUID gameID
+                                                        , @RequestHeader("token") String token){
+        GameDTO result;
+        try {
+            result = this.gameService.finishGame(gameID, token);
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, gameID, "GameFinish");
         }
         return ResponseEntity.ok(result);
     }

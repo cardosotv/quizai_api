@@ -258,6 +258,43 @@ public class GameService {
         return modelMapper.map(gameDB, GameQuestionsDTO.class) ;
     } 
 
+
+    public GameDTO finishGame(UUID gameID, String token){
+        // Check if the game informed exists
+        Game game;
+        try {
+            game = this.gameRepository.findById(gameID).orElse(null);    
+            // If not return the Not Found Exception
+            if(Objects.isNull(game)){
+                throw new NotFoundException("FinishGame", gameID);
+            }
+            // Get the user throught token to audit information
+            UUID userAuditID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
+            // Sum the score from all questions
+            int summed_score = 0;
+            for (GameQuestions question : game.getQuestions()) {
+                summed_score = summed_score + question.getScore();
+            }
+            // Update the game with Score and FinishDate information
+            game.setUpdatedBy(userAuditID);
+            game.setUpdatedDate(new Date());
+            game.setFinishedDate(new Date());
+            game.setScore(summed_score);
+            game = this.gameRepository.save(game);
+
+            // update the User Summary Score
+            game.setUser(this.userService.updateUserScore(game.getUser().getId(), summed_score, token));
+
+        } catch (Throwable t) {
+            // If any erro return treated exception
+            throw HandleException.handleException(t, gameID, "FinishGame");
+        }
+        // Return the GameDTO object as result
+        return modelMapper.map(game, GameDTO.class);
+    }
+
+
+
     private Boolean checkIfAnswerIsCorrect(UUID questionID, UUID optionID) {
         // Inizializated the result 
         Boolean result = false;
@@ -297,4 +334,6 @@ public class GameService {
         }
         return result;
     }
+
+    
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.User;
@@ -159,6 +160,34 @@ public class UserService {
             throw t;
         }
         return userDB;
+    }
+
+    /**
+     * Create by Tiago Cardoso at 08/03/2024
+     * Responsable for update the user summary score of after the game
+     * Input: useID, score, token
+     * Output: User Object 
+     */
+    public User updateUserScore(UUID userID, int score, String token){
+        // Check if the user informed exists
+        User user;
+        try {
+            user = this.userRepository.findById(userID).orElse(null);    
+            // If not return with Not Found Exception
+            if (Objects.isNull(user)){
+                throw new NotFoundException("User by ID", userID);
+            }
+            // Update the score and audit information
+            user.setScore(user.getScore() + score);
+            user.setUpdatedBy(UUID.fromString(JWTUtil.getUserIdFromToken(token)));
+            user.setUpdatedDate(new Date());
+            user = this.userRepository.save(user);
+            // If any error return treated exception
+        } catch (Throwable t) {
+            throw HandleException.handleException(t, userID, "User by ID");
+        }
+        // return the updated user object
+        return user;
     }
 
 }
