@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.entities.User;
 import com.cardosotv.quizai.model.repositories.UserRepository;
-import com.cardosotv.quizai.model.services.UserService;
 import com.cardosotv.quizai.security.JWTUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +39,7 @@ public class UserServiceTest {
         );
     }
 
+    @SuppressWarnings("null")
     @Test
     void getUserByID_ShouldReturnUser() {
         // arrange
@@ -55,6 +55,7 @@ public class UserServiceTest {
     }
 
 
+    @SuppressWarnings("null")
     @Test
     void getUserByID_ShouldReturnNotFound_WhenUserNotExists(){
 
@@ -63,6 +64,7 @@ public class UserServiceTest {
         assertThrows(NotFoundException.class, () -> userService.getUserByID(userId));
     }
 
+    @SuppressWarnings("null")
     @Test
     @Deprecated
     void createUser_ShouldReturnUser_WhenDataIsValid(){

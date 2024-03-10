@@ -1,12 +1,7 @@
 package com.cardosotv.quizai.model.DTO;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-
-import com.cardosotv.quizai.model.entities.Option;
-import com.cardosotv.quizai.model.entities.Question;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

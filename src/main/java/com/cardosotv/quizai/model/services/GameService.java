@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
@@ -21,7 +20,6 @@ import com.cardosotv.quizai.model.DTO.GameDTO;
 import com.cardosotv.quizai.model.DTO.GameQuestionsDTO;
 import com.cardosotv.quizai.model.DTO.OptionDTO;
 import com.cardosotv.quizai.model.DTO.QuestionDTO;
-import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.Game;
 import com.cardosotv.quizai.model.entities.GameQuestions;
 import com.cardosotv.quizai.model.entities.Option;
@@ -31,7 +29,6 @@ import com.cardosotv.quizai.model.entities.User;
 import com.cardosotv.quizai.model.repositories.GameQuestionsRepository;
 import com.cardosotv.quizai.model.repositories.GameRepository;
 import com.cardosotv.quizai.security.JWTUtil;
-import com.cardosotv.quizai.config.QuizAIConfig;
 
 /**
  * @author Tiago Cardoso on 04-03-2024
@@ -214,6 +211,7 @@ public class GameService {
     }
     
     
+    @SuppressWarnings("null")
     public GameQuestionsDTO updateGameQuestions(GameQuestionsDTO gameQuestion
                                 , String token){
         GameQuestions gameDB;
@@ -252,7 +250,6 @@ public class GameService {
             gameDB = this.gameQuestionsRepository.save(gameDB);
             
         } catch (Throwable t) {
-            // TODO: handle exception
             throw HandleException.handleException(t, gameQuestion, "GameQuestion/update");
         }
         // return with the DTO mapped
@@ -260,6 +257,7 @@ public class GameService {
     } 
 
 
+    @SuppressWarnings("null")
     public GameDTO finishGame(UUID gameID, String token){
         // Check if the game informed exists
         Game game;

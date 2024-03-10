@@ -2,7 +2,6 @@ package com.cardosotv.quizai.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.security.JWTUtil;
@@ -15,6 +14,7 @@ public class Interceptor implements HandlerInterceptor{
     @Value("${com.cardoso.quizai.adminid}")
     private String tokenApp; 
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response
                             , Object handler) throws Exception {
@@ -38,6 +38,7 @@ public class Interceptor implements HandlerInterceptor{
     }
 
 
+    @SuppressWarnings("null")
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
                     Object handler, Exception ex) throws Exception {

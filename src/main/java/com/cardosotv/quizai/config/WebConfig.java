@@ -3,7 +3,7 @@ package com.cardosotv.quizai.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
+
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer{
         return new Interceptor();
     }
 
+    @SuppressWarnings("null")
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // add the interceptation in all endpoints 

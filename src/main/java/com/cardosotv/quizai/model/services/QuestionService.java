@@ -4,30 +4,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transaction;
 
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.entities.Subject;
-import com.cardosotv.quizai.model.DTO.QuestionDTO.QuestionDTOBuilder;
 import com.cardosotv.quizai.model.entities.Question;
 import com.cardosotv.quizai.model.repositories.OptionRepository;
 import com.cardosotv.quizai.model.repositories.QuestionRepository;
 import com.cardosotv.quizai.model.repositories.SubjectRepository;
 import com.cardosotv.quizai.model.DTO.*;
 
-import org.springframework.data.domain.Page;
 import com.cardosotv.quizai.security.JWTUtil;
 
 
@@ -83,6 +75,7 @@ public class QuestionService {
     }
 
     // In charge of get the question by Id informed on client request
+    @SuppressWarnings("null")
     public QuestionDTO getQuestionById(UUID questionId){
         // Set up question instance\
         Question question;
@@ -101,6 +94,7 @@ public class QuestionService {
         return mapQuestionToDto(question);
     }
 
+    @SuppressWarnings("null")
     public QuestionDTO createQuestion(Question question, String token) {
         // check if the subjectID informed exists
         Question result;
@@ -138,6 +132,7 @@ public class QuestionService {
 
 
     // Method in charge of update the question object on database
+    @SuppressWarnings("null")
     public QuestionDTO updateQuestion(Question question, String token){
         Question questionDB;
         try {
@@ -168,6 +163,7 @@ public class QuestionService {
     }
 
     // In charge of delete the question requested by questionID
+    @SuppressWarnings("null")
     public void deleteQuestion(UUID questionID, String token){
         // set up question instance
         Question question;

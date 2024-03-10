@@ -32,6 +32,7 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @SuppressWarnings("deprecation")
     @GetMapping
     public ResponseEntity<Object> getAuthorization(@RequestHeader("userId") String userID){
 

@@ -5,13 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.cardosotv.quizai.model.entities.GameQuestions;
-import com.cardosotv.quizai.model.entities.Subject;
-import com.cardosotv.quizai.model.entities.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.modelmapper.ModelMapper;
 
 /**
  * @author Tiago Cardoso on 04-03-2024

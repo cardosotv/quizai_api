@@ -97,7 +97,6 @@ public class UserService {
 
 
     // method in charge of create the user on database
-    @SuppressWarnings("null")
     public User createUser(User user, String token){
         
         // get the userId from token to use to create the new user        
@@ -168,6 +167,7 @@ public class UserService {
      * Input: useID, score, token
      * Output: User Object 
      */
+    @SuppressWarnings("null")
     public User updateUserScore(UUID userID, int score, String token){
         // Check if the user informed exists
         User user;

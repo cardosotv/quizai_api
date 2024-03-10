@@ -1,12 +1,11 @@
 package com.cardosotv.quizai.model.repositories;
 
-import java.util.List;
+
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import com.cardosotv.quizai.model.entities.Game;
 

@@ -1,10 +1,8 @@
 package com.cardosotv.quizai.model.DTO;
 
-import java.util.List;
+
 import java.util.UUID;
 
-import com.cardosotv.quizai.model.entities.Game;
-import com.cardosotv.quizai.model.DTO.*;
 
 /**
  * @author Tiago Cardoso on 04-03-2024
