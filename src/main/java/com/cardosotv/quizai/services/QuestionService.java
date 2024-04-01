@@ -1,11 +1,13 @@
-package com.cardosotv.quizai.model.services;
+package com.cardosotv.quizai.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,10 @@ import org.springframework.stereotype.Service;
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.entities.Subject;
+import com.cardosotv.quizai.repositories.OptionRepository;
+import com.cardosotv.quizai.repositories.QuestionRepository;
+import com.cardosotv.quizai.repositories.SubjectRepository;
 import com.cardosotv.quizai.model.entities.Question;
-import com.cardosotv.quizai.model.repositories.OptionRepository;
-import com.cardosotv.quizai.model.repositories.QuestionRepository;
-import com.cardosotv.quizai.model.repositories.SubjectRepository;
 import com.cardosotv.quizai.model.DTO.*;
 
 import com.cardosotv.quizai.security.JWTUtil;
@@ -33,13 +35,17 @@ public class QuestionService {
     private final OptionRepository optionRepository;
     @Autowired
     private final SubjectRepository subjectRepository;
+    @Autowired
+    private final ModelMapper modelMapper;
 
     public QuestionService(QuestionRepository questionRepository 
                             , OptionRepository optionRepository
-                            , SubjectRepository subjectRepository) {
+                            , SubjectRepository subjectRepository
+                            , ModelMapper modelMapper) {
         this.questionRepository = questionRepository;
         this.optionRepository = optionRepository;
         this.subjectRepository = subjectRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<QuestionDTO> listAllQuestionBySubject(UUID subjectId, int page, int size){
@@ -95,11 +101,11 @@ public class QuestionService {
     }
 
     @SuppressWarnings("null")
-    public QuestionDTO createQuestion(Question question, String token) {
+    public QuestionDTO createQuestion(QuestionDTO question, String token) {
         // check if the subjectID informed exists
         Question result;
         try {
-            Subject subject = this.subjectRepository.findById(question.getSubject()).orElse(null);
+            Subject subject = this.subjectRepository.findById(question.getSubjectID()).orElse(null);
             // If not exists throw the exception NotFound
             if (Objects.isNull(subject)) {
                 throw new NotFoundException("Question", question);
@@ -108,12 +114,14 @@ public class QuestionService {
             // Get the atribute createBy from token
             UUID createdBy = UUID.fromString(JWTUtil.getUserIdFromToken(token));
             
+            Question questionDB = modelMapper.map(question, Question.class);
+
             // Update the field createdBY and createdDate
-            question.setCreatedBy(createdBy);
-            question.setCreatedDate(new Date());
+            questionDB.setCreatedBy(createdBy);
+            questionDB.setCreatedDate(new Date());
             
             // Save que question on database
-            result = this.questionRepository.save(question);
+            result = this.questionRepository.save(questionDB);
             
         //    After that create the options with the questionID returned by previous step
             if (result.getId() != null) {
@@ -198,6 +206,60 @@ public class QuestionService {
         List<OptionDTO> optionDTOs = question.getOptions().stream().map(option -> new OptionDTO(
             option.getId(), option.getOption(), option.isIsCorrect())).collect(Collectors.toList());
 
-        return new QuestionDTO(question.getId(), question.getQuestion(), optionDTOs);
+        return new QuestionDTO(question.getId(), question.getQuestion(), optionDTOs, question.getIdSubject());
     }
+
+
+    /**
+     * Returns the question list for create a new game in according of the user.
+     * @param subjectID Subject identifier.
+     * @param userID User identifier.
+     * @return List of questions.
+     */
+    public List<QuestionDTO> getQuestionsForNewGame(UUID subjectID, UUID userID, String token){
+
+        // Instantiate the list result 
+        List<QuestionDTO> result = new ArrayList<>();
+        
+        // Get the list of question by subject that the user have never answered correctly.
+        List<Question> questions = this.questionRepository.findQuestionsNotAnsweredByUser(userID, subjectID);
+
+        // Check if the list is not null
+        if (Objects.isNull(questions)){
+            throw new NotFoundException("Questions", "getQuestionsForNewGame");
+        }
+        
+        // Check if this list has questions enough for the game (qtd = 10)
+        if (questions.size() < 10){
+        
+            // If not, ask to Chatgpt for missing questions.
+            int missing_questions = 10 - questions.size();
+
+            Subject subject = this.subjectRepository.findById(subjectID).orElse(null);
+
+            // Check if the list is not null
+            if (Objects.isNull(subject)){
+                throw new NotFoundException("Subject", subjectID);
+            }
+
+            // Request questions for ChatGPT
+            List<QuestionDTO> questionsChatGPT = OpenAIService.requestNewQuestionByUser(null, missing_questions, subject.getName());
+        
+            // Append the question from ChatGPT to result list
+            for (QuestionDTO question : questionsChatGPT) {
+                question.setSubjectID(subjectID);
+                QuestionDTO questionDTO = this.createQuestion(question, token);
+                result.add(questionDTO);
+            }
+
+        }
+
+        // Append chatgpt questions to general question list 
+        for (Question question : questions) {
+            result.add(modelMapper.map(question, QuestionDTO.class));
+        }
+
+        // Return the complete question list
+        return result;
+    } 
 }

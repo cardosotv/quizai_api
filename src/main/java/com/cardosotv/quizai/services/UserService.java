@@ -1,4 +1,4 @@
-package com.cardosotv.quizai.model.services;
+package com.cardosotv.quizai.services;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,7 +16,6 @@ import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.User;
-import com.cardosotv.quizai.model.repositories.UserRepository;
 import com.cardosotv.quizai.security.JWTUtil;
 import org.springframework.data.domain.Page;
 

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cardosotv.quizai.error.*;
 import com.cardosotv.quizai.model.entities.Subject;
-import com.cardosotv.quizai.model.services.SubjectService;
+import com.cardosotv.quizai.services.SubjectService;
 
 import jakarta.validation.Valid;
 

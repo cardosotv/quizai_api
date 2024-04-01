@@ -13,11 +13,11 @@ import lombok.Data;
  * @author Tiago Cardoso on 01-03-2024
  */
 @SuppressWarnings("deprecation")
-@Data
-@Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
-@JsonIgnoreProperties({"hibernate_lazy_initializer", "handler"})
+// @Data
+// @Builder
+// @JsonInclude(JsonInclude.Include.NON_NULL)
+// @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
+// @JsonIgnoreProperties({"hibernate_lazy_initializer", "handler"})
 public class OptionDTO {
     private UUID id;
     private String option;

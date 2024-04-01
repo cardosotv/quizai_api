@@ -1,4 +1,4 @@
-package com.cardosotv.quizai.model.services;
+package com.cardosotv.quizai.services;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,8 +26,8 @@ import com.cardosotv.quizai.model.entities.Option;
 import com.cardosotv.quizai.model.entities.Question;
 import com.cardosotv.quizai.model.entities.Subject;
 import com.cardosotv.quizai.model.entities.User;
-import com.cardosotv.quizai.model.repositories.GameQuestionsRepository;
-import com.cardosotv.quizai.model.repositories.GameRepository;
+import com.cardosotv.quizai.repositories.GameQuestionsRepository;
+import com.cardosotv.quizai.repositories.GameRepository;
 import com.cardosotv.quizai.security.JWTUtil;
 
 /**
@@ -69,27 +69,30 @@ public class GameService {
         // Set the return object instance
         GameDTO gameDTO;
         try {
+            // check if the subject exists 
             Subject subjectDB = this.subjectService.getSubjectByID(subjectID);    
             if(Objects.isNull(subjectDB)){
                 throw new NotFoundException("Game", subjectDB);
             } 
+
             // Check if exists questions for the selected subject.
-            List<Question> questions = this.questionService.listAllQuestionBySubEntity(subjectID, 1, 10);
-            // If not, ask for the chatGPT generate it.
-            // *** necessary implementation
-            // Create the game with the questions that this user has not yet 
+            //List<Question> questions = this.questionService.listAllQuestionBySubEntity(subjectID, 1, 10);
             UUID userLoggedID  = UUID.fromString(JWTUtil.getUserIdFromToken(token));
+            List<QuestionDTO> questions = this.questionService.getQuestionsForNewGame(subjectID, userLoggedID, token);
+
+            // Create the game with the questions that this user has not yet 
             User user = this.userService.getUserByID(userLoggedID);
             if(Objects.isNull(user)){
                 throw new NotFoundException("User", userLoggedID);
             }
+
             // Fill the GameQuestion Object
             List<GameQuestions> gameQuestions = new ArrayList<>();
-            for (Question question : questions) {
+            for (QuestionDTO question : questions) {
                 gameQuestions.add(new GameQuestions(
                     new Date()
                     , userLoggedID
-                    , question
+                    , modelMapper.map(question, Question.class)
                     , 0, 0
                     , false)
                     );
@@ -131,6 +134,7 @@ public class GameService {
         // If any error return the treated exception.
         return gameDTO;
     }
+
 
     // responsable for delivery to request all Games as the especificate params
     public List<GameDTO> getAllGames(UUID userID, Boolean ranking, int page, int size) {
@@ -293,7 +297,6 @@ public class GameService {
     }
 
 
-
     private Boolean checkIfAnswerIsCorrect(UUID questionID, UUID optionID) {
         // Inizializated the result 
         Boolean result = false;
@@ -334,5 +337,7 @@ public class GameService {
         return result;
     }
 
+
+    
     
 }

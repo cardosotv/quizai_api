@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.model.DTO.GameDTO;
 import com.cardosotv.quizai.model.DTO.GameQuestionsDTO;
-import com.cardosotv.quizai.model.services.GameService;
+import com.cardosotv.quizai.services.GameService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.websocket.server.PathParam;
 
 /**
  * @author Tiago Cardoso on 04-03-2024

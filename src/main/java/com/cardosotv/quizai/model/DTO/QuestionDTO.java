@@ -26,13 +26,14 @@ public class QuestionDTO {
     private UUID id;
     private String question;
     private List<OptionDTO> options;
+    private UUID subjectID;
 
-    public QuestionDTO(UUID id, String question, List<OptionDTO> options) {
+    public QuestionDTO(UUID id, String question, List<OptionDTO> options, UUID subjectID) {
         this.id = id;
         this.question = question;
         this.options = options;
+        this.subjectID = subjectID;
     }
-
 
     public QuestionDTO() {}
 
@@ -77,6 +78,21 @@ public class QuestionDTO {
      */
     public void setOptions(List<OptionDTO> options) {
         this.options = options;
+    }
+
+
+    /**
+     * @return UUID return the subjectID
+     */
+    public UUID getSubjectID() {
+        return subjectID;
+    }
+
+    /**
+     * @param subjectID the subjectID to set
+     */
+    public void setSubjectID(UUID subjectID) {
+        this.subjectID = subjectID;
     }
 
 }

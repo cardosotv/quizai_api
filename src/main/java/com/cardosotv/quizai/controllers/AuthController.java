@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cardosotv.quizai.error.UnauthorizedException;
 import com.cardosotv.quizai.model.entities.Authorization;
 import com.cardosotv.quizai.model.entities.User;
-import com.cardosotv.quizai.model.services.UserService;
 import com.cardosotv.quizai.security.JWTUtil;
+import com.cardosotv.quizai.services.UserService;
 
 @RestController
 @RequestMapping("/api/auth")

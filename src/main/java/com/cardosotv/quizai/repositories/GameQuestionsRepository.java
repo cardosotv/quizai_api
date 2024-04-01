@@ -1,4 +1,4 @@
-package com.cardosotv.quizai.model.repositories;
+package com.cardosotv.quizai.repositories;
 
 import java.util.UUID;
 

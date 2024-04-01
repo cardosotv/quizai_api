@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.model.DTO.QuestionDTO;
 import com.cardosotv.quizai.model.entities.Question;
-import com.cardosotv.quizai.model.services.QuestionService;
+import com.cardosotv.quizai.security.JWTUtil;
+import com.cardosotv.quizai.services.QuestionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,7 +64,7 @@ public class QuestionController {
     , description = "Create new question on QuizAI database.")
     @ApiResponse(responseCode = "200"
            , description = "Question created!")
-    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody @Valid Question question
+    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody @Valid QuestionDTO question
                                         , @RequestHeader("token") String token){
         // call the method to create the question on ServiceLayer
         QuestionDTO result;
@@ -134,4 +135,22 @@ public class QuestionController {
         // Return the operation result
         return ResponseEntity.ok(question);
     }
+
+
+    @GetMapping("/test")
+    @Operation(summary = "Get request for test operations."
+    , description =  "In charge of test some get lists questions.")
+    @ApiResponse(responseCode = "200", description = "Question found with success.")
+    public ResponseEntity<List<QuestionDTO>> getQuestionsTest(@RequestHeader("token") String token){
+
+        UUID subjectID = UUID.fromString("0b9e5598-9810-4a48-af23-da286d60e1f1"); // Celebrites
+        //UUID subjectID = UUID.fromString("75be5dcc-82ab-4a52-be37-d045bd288a92"); // News
+        UUID userID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
+        
+        List<QuestionDTO> questions = this.questionService.getQuestionsForNewGame(subjectID, userID, token);
+        
+        return ResponseEntity.ok(questions);
+    }
+
+
 }

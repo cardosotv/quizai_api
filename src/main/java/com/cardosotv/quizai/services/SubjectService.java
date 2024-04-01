@@ -1,8 +1,10 @@
-package com.cardosotv.quizai.model.services;
+package com.cardosotv.quizai.services;
 
 
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.entities.Subject;
+import com.cardosotv.quizai.repositories.SubjectRepository;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -10,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import com.cardosotv.quizai.model.repositories.SubjectRepository;
 
 
 @Service
