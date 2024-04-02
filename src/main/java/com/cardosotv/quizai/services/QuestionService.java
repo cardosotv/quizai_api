@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -37,6 +38,13 @@ public class QuestionService {
     private final SubjectRepository subjectRepository;
     @Autowired
     private final ModelMapper modelMapper;
+
+    @Value("${com.cardoso.quizai.apikey}")
+    private String apiKeyOpenAI;
+
+    @Value("${com.cardosotv.quizai.enpointopenai}")
+    private String endpointOpenAI;
+    
 
     public QuestionService(QuestionRepository questionRepository 
                             , OptionRepository optionRepository
@@ -216,6 +224,7 @@ public class QuestionService {
      * @param userID User identifier.
      * @return List of questions.
      */
+    @SuppressWarnings("null")
     public List<QuestionDTO> getQuestionsForNewGame(UUID subjectID, UUID userID, String token){
 
         // Instantiate the list result 
@@ -243,7 +252,12 @@ public class QuestionService {
             }
 
             // Request questions for ChatGPT
-            List<QuestionDTO> questionsChatGPT = OpenAIService.requestNewQuestionByUser(null, missing_questions, subject.getName());
+            OpenAIService openAIService = new OpenAIService();
+            List<QuestionDTO> questionsChatGPT = openAIService.requestNewQuestionByUser(null
+                                                                    , missing_questions
+                                                                    , subject.getName()
+                                                                    , apiKeyOpenAI
+                                                                    , endpointOpenAI);
         
             // Append the question from ChatGPT to result list
             for (QuestionDTO question : questionsChatGPT) {

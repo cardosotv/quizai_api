@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cardosotv.quizai.error.NotFoundException;
-import com.cardosotv.quizai.model.DTO.QuestionDTO;
 import com.cardosotv.quizai.model.entities.Question;
 import com.cardosotv.quizai.repositories.QuestionRepository;
 

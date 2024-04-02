@@ -16,7 +16,9 @@ import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.User;
+import com.cardosotv.quizai.repositories.UserRepository;
 import com.cardosotv.quizai.security.JWTUtil;
+
 import org.springframework.data.domain.Page;
 
 

@@ -6,10 +6,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import java.io.File;
 import java.util.Scanner;
 
@@ -22,16 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.lang.Objects;
 
-
 public class OpenAIService {
-
-    @Value("${com.cardosotv.quizai.apikeyopenai}")
-    private static String apiKeyOpenAI;
-    // @Value("${com.cardosotv.quizai.enpointopenai}")
-    // private String endpointOpenAI;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     public static void main(String[] args) throws Exception{
 
@@ -40,7 +27,14 @@ public class OpenAIService {
         System.out.println(result);
     }
 
-    public static List<QuestionDTO> requestNewQuestionByUser(List<String> excludeList, int quantityQuestions, String subject){
+    public OpenAIService() {}
+
+    public List<QuestionDTO> requestNewQuestionByUser(
+                                    List<String> excludeList
+                                    , int quantityQuestions
+                                    , String subject
+                                    , String apiKeyOpenAI
+                                    , String endpointOpenAI){
 
         // Set up the prompt to request a questions to OpenAI
         String prompt = "Create a list with "+ quantityQuestions + " questions and answers like a multi choice quiz with "
@@ -58,7 +52,7 @@ public class OpenAIService {
 
         try {
             // Use this bellow for test WITH connect to openAI
-            String content = requestToOpenAI(prompt);
+            String content = requestToOpenAI(prompt, apiKeyOpenAI, endpointOpenAI);
             
             // Use this bellow for test WITHOUT connect to openAI
             //String content = readMockResponseOpenAI(quantityQuestions);
@@ -93,10 +87,8 @@ public class OpenAIService {
         return result; //modelMapper.map(result, QuestionDTO.class);
     }
 
-    private static String requestToOpenAI(String prompt){
+    private String requestToOpenAI(String prompt, String apiKeyOpenAI, String endpointOpenAI){
 
-        String endpointOpenAI = "https://api.openai.com/v1/chat/completions";
-        String apiKey = apiKeyOpenAI; // add Key to connect to OpenAI
         String requestBody = "{\n" +
                 "  \"model\": \"gpt-3.5-turbo\",\n" +
                 "  \"messages\": [\n" +

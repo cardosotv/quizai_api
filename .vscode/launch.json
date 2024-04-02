@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "OpenAIService",
+            "request": "launch",
+            "mainClass": "com.cardosotv.quizai.services.OpenAIService",
+            "projectName": "first-spring-app"
+        },
+        {
+            "type": "java",
             "name": "Debug-QuizAIApplication",
             "request": "launch",
             "console": "integratedTerminal",

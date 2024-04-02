@@ -12,8 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cardosotv.quizai.error.NotFoundException;
 import com.cardosotv.quizai.model.entities.User;
-import com.cardosotv.quizai.model.repositories.UserRepository;
+import com.cardosotv.quizai.repositories.UserRepository;
 import com.cardosotv.quizai.security.JWTUtil;
+import com.cardosotv.quizai.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
