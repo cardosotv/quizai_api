@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cardosotv.quizai.error.HandleException;
+import com.cardosotv.quizai.model.DTO.UserDTO;
 import com.cardosotv.quizai.model.entities.User;
 import com.cardosotv.quizai.services.UserService;
 
@@ -70,16 +71,16 @@ public class UserController {
     }
 
     @GetMapping("/{userID}")
-    public ResponseEntity<Object> getUserByID(@PathVariable UUID userID 
+    public ResponseEntity<UserDTO> getUserByID(@PathVariable UUID userID 
                                         , @RequestHeader("token") String token) {
         // instanciate a User object
-        User user = new User();
+        UserDTO user;
         try {
             // try find out the user by ID
-            user = this.userService.getUserByID(userID);
+            user = this.userService.getUserByIdDTO(userID);
         } catch (Throwable t) {
             // if had any exception handling it.
-            HandleException.handleException(t, userID, "User");
+            throw HandleException.handleException(t, userID, "User");
         }
         // return the user founded by response
         return ResponseEntity.ok(user);

@@ -23,7 +23,7 @@ public class Interceptor implements HandlerInterceptor{
         if (url.length() > 7){
             url = url.substring(0, 7);
         }
-        // if it is the authorization request not to do
+        // if it isn't the authorization request check token
         if (url.equals("/api/v1")){
             try {
                 // get the token from header request           

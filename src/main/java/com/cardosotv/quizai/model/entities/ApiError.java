@@ -1,12 +1,16 @@
 package com.cardosotv.quizai.model.entities;
 
 import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 
 public class ApiError {
 
     private HttpStatus status;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date datetime;
     private String message;
     private String details;

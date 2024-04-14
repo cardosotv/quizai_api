@@ -155,6 +155,7 @@ public class OpenAIService {
             JsonNode contentNode = rootNode.get("choices").get(0).get("message").get("content");
 
             result = contentNode.asText();
+            
 
             result = result.replace("```json", "");
             result = result.replace("```", "").trim();
