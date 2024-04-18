@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import com.cardosotv.quizai.model.DTO.OptionDTO;
+import com.cardosotv.quizai.model.entities.Option;
 import com.cardosotv.quizai.model.entities.Question;
 
 public interface QuestionRepository extends JpaRepository<Question, UUID>{
@@ -27,4 +30,5 @@ public interface QuestionRepository extends JpaRepository<Question, UUID>{
             "\t order by random() limit 10"
         , nativeQuery = true)
     public List<Question> findQuestionsNotAnsweredByUser(UUID userID, UUID subjectID);
+
 }

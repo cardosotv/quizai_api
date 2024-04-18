@@ -20,6 +20,7 @@ import com.cardosotv.quizai.model.entities.Subject;
 import com.cardosotv.quizai.repositories.OptionRepository;
 import com.cardosotv.quizai.repositories.QuestionRepository;
 import com.cardosotv.quizai.repositories.SubjectRepository;
+import com.cardosotv.quizai.model.entities.Option;
 import com.cardosotv.quizai.model.entities.Question;
 import com.cardosotv.quizai.model.DTO.*;
 
@@ -275,5 +276,58 @@ public class QuestionService {
 
         // Return the complete question list
         return result;
-    } 
+    }
+    
+
+    /**
+     * @author Tiago Cardoso - 18/04/2024
+     * Purpose: Returns the correct option for especific question
+     * @param questionID Question identifier.
+     * @return OptionDTO Object with correct option.
+     */
+    Option getCorrectOptionByQuestion(UUID questionID) {
+
+        Option correctOption;
+
+        try {
+            //correctOption = questionRepository.findCorrectOptionByQuestion(questionID);
+            correctOption = optionRepository.findCorrectOptionByQuestion(questionID);
+
+            if (Objects.isNull(correctOption)){
+                throw new NotFoundException("Correct Option", questionID);
+            }  
+
+        } catch (Throwable t) {
+            // TODO: handle exception
+            throw HandleException.handleException(t, questionID, "Correct Option");
+        }
+
+        return correctOption;
+    }
+
+     /**
+     * @author Tiago Cardoso - 18/04/2024
+     * Purpose: Returns the correct option for especific question
+     * @param questionID Question identifier.
+     * @return OptionDTO Object with correct option.
+     */
+    Option getOptionByID(UUID optionID) {
+
+        Option option;
+
+        try {
+            option = optionRepository.findById(optionID).orElse(null);
+
+            if (Objects.isNull(option)){
+                throw new NotFoundException("Correct Option", optionID);
+            }  
+
+        } catch (Throwable t) {
+            // TODO: handle exception
+            throw HandleException.handleException(t, optionID, "Get option by ID.");
+        }
+
+        return option;
+    }
+
 }

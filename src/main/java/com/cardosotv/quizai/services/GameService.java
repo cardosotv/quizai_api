@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.cardosotv.quizai.error.HandleException;
 import com.cardosotv.quizai.error.NotFoundException;
+import com.cardosotv.quizai.model.DTO.AnswerDTO;
 import com.cardosotv.quizai.model.DTO.GameDTO;
 import com.cardosotv.quizai.model.DTO.GameQuestionsDTO;
 import com.cardosotv.quizai.model.DTO.OptionDTO;
@@ -216,37 +217,36 @@ public class GameService {
     
     
     @SuppressWarnings("null")
-    public GameQuestionsDTO updateGameQuestions(GameQuestionsDTO gameQuestion
-                                , String token){
+    public GameQuestionsDTO updateGameQuestions(AnswerDTO answerDTO
+                                            , String token){
         GameQuestions gameDB;
         try {
             // Check if the question informed exists 
-            gameDB = this.gameQuestionsRepository.findById(gameQuestion.getId()).orElse(null);
+            gameDB = this.gameQuestionsRepository.getByGameAndQuestion(answerDTO.getGameID()
+                                                                    , answerDTO.getGuestionID());
+
             // If not return the Not Found Exception
             if (Objects.isNull(gameDB)){
-                throw new NotFoundException("GameQuestion", gameQuestion);
+                throw new NotFoundException("GameQuestion", answerDTO);
             }
             // Get the userId from token to save the audit information
             UUID userID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
             
             // Check if the answer is correct
-            if (Objects.isNull(gameQuestion.getAnswer())){
-                throw new NotFoundException("Answer is null.", gameQuestion);
-            }   
+            // if (Objects.isNull(gameQuestion.getAnswer())){
+            //     throw new NotFoundException("Answer is null.", gameQuestion);
+            // }   
             
-            Boolean isCorrect = checkIfAnswerIsCorrect(gameQuestion.getQuestion().getId()
-            , gameQuestion.getAnswer().getId());   
+            Boolean isCorrect = checkIfAnswerIsCorrect(answerDTO.getGuestionID()
+                                                , answerDTO.getOptionAnswered());   
             
-            Option answer = new Option();
-            answer.setIsCorrect(isCorrect);
-            answer.setId(gameQuestion.getAnswer().getId());
-            answer.setOption(gameQuestion.getAnswer().getOption());
-            
+            Option answer = questionService.getOptionByID(answerDTO.getOptionAnswered());
+
             // Update gamequestion data 
             gameDB.setUpdatedDate(new Date());
             gameDB.setUpdatedBy(userID);
-            gameDB.setTime(gameQuestion.getTime());
-            gameDB.setScore(calculateScoreByAnswer(gameQuestion.getTime(), isCorrect));
+            gameDB.setTime(answerDTO.getAnswerTime());
+            gameDB.setScore(calculateScoreByAnswer(answerDTO.getAnswerTime(), isCorrect));
             gameDB.setIsCorrect(isCorrect);
             gameDB.setAnswer(answer);
     
@@ -254,7 +254,7 @@ public class GameService {
             gameDB = this.gameQuestionsRepository.save(gameDB);
             
         } catch (Throwable t) {
-            throw HandleException.handleException(t, gameQuestion, "GameQuestion/update");
+            throw HandleException.handleException(t, answerDTO, "GameQuestion/update");
         }
         // return with the DTO mapped
         return modelMapper.map(gameDB, GameQuestionsDTO.class) ;
@@ -301,15 +301,15 @@ public class GameService {
         // Inizializated the result 
         Boolean result = false;
         try {
-            // Get the question from the option informed
-            QuestionDTO question = this.questionService.getQuestionById(questionID);
+            // Get the correct option
+            Option correctOption = this.questionService.getCorrectOptionByQuestion(questionID);
+            
             // Check if the option informed is correct
-            for (OptionDTO optionDB : question.getOptions()) {
-                if (Objects.equals(optionDB.getId(), optionID)){
-                    result = optionDB.isIsCorrect();
-                }
+            if (Objects.equals(correctOption.getId() , optionID)){
+                result = true;
             }
-            // If any error return treated exception
+            
+        // If any error return treated exception
         } catch (Throwable t) {
             throw HandleException.handleException(t, optionID, "GameQuestion");
         }

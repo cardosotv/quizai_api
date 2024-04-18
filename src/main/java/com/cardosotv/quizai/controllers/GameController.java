@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cardosotv.quizai.error.HandleException;
+import com.cardosotv.quizai.model.DTO.AnswerDTO;
 import com.cardosotv.quizai.model.DTO.GameDTO;
 import com.cardosotv.quizai.model.DTO.GameQuestionsDTO;
 import com.cardosotv.quizai.services.GameService;
@@ -140,13 +141,13 @@ public class GameController {
     @Operation(summary = "Put request for Games Question."
     , description =  "Endpoint in charge of update the game questions with the user answer.")
     @ApiResponse(responseCode =  "200", description =  "Game Question Updated.")
-    public ResponseEntity<GameQuestionsDTO> updateGameQuestion( @RequestBody GameQuestionsDTO gameQuestion
+    public ResponseEntity<GameQuestionsDTO> updateGameQuestion( @RequestBody AnswerDTO answer
                                                         , @RequestHeader("token") String token){
         GameQuestionsDTO result;
         try {
-            result = this.gameService.updateGameQuestions(gameQuestion, token);
+            result = this.gameService.updateGameQuestions(answer, token);
         } catch (Throwable t) {
-            throw HandleException.handleException(t, gameQuestion, "GameQuestion");
+            throw HandleException.handleException(t, answer, "GameQuestion");
         }
         return ResponseEntity.ok(result);
     }
