@@ -20,13 +20,6 @@ import io.jsonwebtoken.lang.Objects;
 
 public class OpenAIService {
 
-    public static void main(String[] args) throws Exception{
-
-        String result = "";
-        //List<QuestionDTO> result = new OpenAIService().requestNewQuestionByUser(null, 10, "Movies");
-        System.out.println(result);
-    }
-
     public OpenAIService() {}
 
     public List<QuestionDTO> requestNewQuestionByUser(
