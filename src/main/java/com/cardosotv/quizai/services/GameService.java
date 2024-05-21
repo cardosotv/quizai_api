@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,13 +49,9 @@ public class GameService {
     @Autowired
     private ModelMapper modelMapper;
 
-
-    public GameService(GameRepository gameRepository
-                , GameQuestionsRepository gameQuestionsRepository
-                , SubjectService subjectService
-                , QuestionService questionService
-                , UserService userService
-                , ModelMapper modelMapper){
+    public GameService(GameRepository gameRepository, GameQuestionsRepository gameQuestionsRepository,
+            SubjectService subjectService, QuestionService questionService, UserService userService,
+            ModelMapper modelMapper) {
         this.gameRepository = gameRepository;
         this.gameQuestionsRepository = gameQuestionsRepository;
         this.subjectService = subjectService;
@@ -65,25 +60,25 @@ public class GameService {
         this.modelMapper = modelMapper;
     }
 
-
     public GameDTO createGame(UUID subjectID, String token) {
         // Set the return object instance
         GameDTO gameDTO;
         try {
-            // check if the subject exists 
-            Subject subjectDB = this.subjectService.getSubjectByID(subjectID);    
-            if(Objects.isNull(subjectDB)){
+            // check if the subject exists
+            Subject subjectDB = this.subjectService.getSubjectByID(subjectID);
+            if (Objects.isNull(subjectDB)) {
                 throw new NotFoundException("Game", subjectDB);
-            } 
+            }
 
             // Check if exists questions for the selected subject.
-            //List<Question> questions = this.questionService.listAllQuestionBySubEntity(subjectID, 1, 10);
-            UUID userLoggedID  = UUID.fromString(JWTUtil.getUserIdFromToken(token));
+            // List<Question> questions =
+            // this.questionService.listAllQuestionBySubEntity(subjectID, 1, 10);
+            UUID userLoggedID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
             List<QuestionDTO> questions = this.questionService.getQuestionsForNewGame(subjectID, userLoggedID, token);
 
-            // Create the game with the questions that this user has not yet 
+            // Create the game with the questions that this user has not yet
             User user = this.userService.getUserByID(userLoggedID);
-            if(Objects.isNull(user)){
+            if (Objects.isNull(user)) {
                 throw new NotFoundException("User", userLoggedID);
             }
 
@@ -91,14 +86,9 @@ public class GameService {
             List<GameQuestions> gameQuestions = new ArrayList<>();
             for (QuestionDTO question : questions) {
                 gameQuestions.add(new GameQuestions(
-                    new Date()
-                    , userLoggedID
-                    , modelMapper.map(question, Question.class)
-                    , 0, 0
-                    , false)
-                    );
-                
-                }                        
+                        new Date(), userLoggedID, modelMapper.map(question, Question.class), 0, 0, false));
+
+            }
             Game game = new Game();
             game.setCreatedDate(new Date());
             game.setCreatedBy(user.getId());
@@ -108,8 +98,9 @@ public class GameService {
             game.setUser(user);
             game.setQuestions(gameQuestions);
             Game gameDB = this.gameRepository.save(game);
-            //After created the Game update the Questions with gameID returned by previous step
-            if (gameDB.getId() != null) {            
+            // After created the Game update the Questions with gameID returned by previous
+            // step
+            if (gameDB.getId() != null) {
                 // Set the reference to the question in each associated option
                 gameDB.getQuestions().forEach(question -> question.setGame(gameDB));
                 // Save the associeted options
@@ -117,13 +108,14 @@ public class GameService {
             }
             // convert the result for DTO with Object Mapper
             gameDTO = this.modelMapper.map(gameDB, GameDTO.class);
-            
-            List<GameQuestionsDTO> gameQuestionsDTO;
-            
 
-            gameQuestionsDTO = gameDTO.getGameQuestions().stream().map(q -> new GameQuestionsDTO(q.getId()
-                , this.questionService.getQuestionById(q.getQuestion().getId())
-                , q.getTime(), q.getScore(), q.isIsCorrect(), null)).collect(Collectors.toList());
+            List<GameQuestionsDTO> gameQuestionsDTO;
+
+            gameQuestionsDTO = gameDTO.getGameQuestions().stream()
+                    .map(q -> new GameQuestionsDTO(q.getId(),
+                            this.questionService.getQuestionById(q.getQuestion().getId()), q.getTime(), q.getScore(),
+                            q.isIsCorrect(), null))
+                    .collect(Collectors.toList());
 
             gameDTO.setGameQuestions(gameQuestionsDTO);
             // gameDTO.setQuestions(new List<);
@@ -136,7 +128,6 @@ public class GameService {
         return gameDTO;
     }
 
-
     // responsable for delivery to request all Games as the especificate params
     public List<GameDTO> getAllGames(UUID userID, Boolean ranking, int page, int size) {
 
@@ -144,15 +135,15 @@ public class GameService {
         Page<Game> games;
         try {
             // Get the games list
-            if(!Objects.isNull(userID)){
+            if (!Objects.isNull(userID)) {
                 games = this.gameRepository.findByUserId(userID, PageRequest.of(page, size));
-            } else if(!Objects.isNull(ranking)) {
+            } else if (!Objects.isNull(ranking)) {
                 games = this.gameRepository.findTop10ByOrderByScoreDesc(PageRequest.of(page, size));
             } else {
                 games = this.gameRepository.findAll(PageRequest.of(page, size));
             }
             // Check if it is empty
-            if(games.getContent().size() == 0){
+            if (games.getContent().size() == 0) {
                 // If yes return the Not Found Exception
                 throw new NotFoundException("Games", null);
             }
@@ -162,13 +153,12 @@ public class GameService {
             }
         } catch (Throwable t) {
             throw HandleException.handleException(t, null, "Game");
-        } 
+        }
         // return the result
         return result;
     }
 
-
-    // responsable for delivery to request all Games by ID 
+    // responsable for delivery to request all Games by ID
     public GameDTO getGameByID(UUID id) {
 
         GameDTO result;
@@ -176,7 +166,7 @@ public class GameService {
             // check if the Game exists by informed ID
             @SuppressWarnings("null")
             Game game = this.gameRepository.findById(id).orElse(null);
-            if(Objects.isNull(game)){
+            if (Objects.isNull(game)) {
                 // If yes return the Not Found Exception
                 throw new NotFoundException("Games", null);
             }
@@ -184,21 +174,20 @@ public class GameService {
             result = modelMapper.map(game, GameDTO.class);
         } catch (Throwable t) {
             throw HandleException.handleException(t, null, "Game");
-        } 
+        }
         // return the result
         return result;
     }
 
-
     // Responsable for delete the game and game question informed
     @SuppressWarnings("null")
-    public void deleteGameByID(UUID gameID){
+    public void deleteGameByID(UUID gameID) {
 
         // Check if the game informed exists
         Game game = this.gameRepository.findById(gameID).orElse(null);
         try {
             // If not return Not Found Exception
-            if (Objects.isNull(game)){
+            if (Objects.isNull(game)) {
                 throw new NotFoundException("Delete Game", game);
             }
             // Get the question from this game
@@ -206,69 +195,65 @@ public class GameService {
 
             // If yes delete first the questions from this game
             this.gameRepository.delete(game);
-            // After that delete the game 
-            
+            // After that delete the game
+
         } catch (Throwable t) {
             // If any error return the treated exceptio
             throw HandleException.handleException(t, gameID, "Game/Delete");
         }
 
     }
-    
-    
+
     @SuppressWarnings("null")
-    public GameQuestionsDTO updateGameQuestions(AnswerDTO answerDTO
-                                            , String token){
+    public GameQuestionsDTO updateGameQuestions(AnswerDTO answerDTO, String token) {
         GameQuestions gameDB;
         try {
-            // Check if the question informed exists 
-            gameDB = this.gameQuestionsRepository.getByGameAndQuestion(answerDTO.getGameID()
-                                                                    , answerDTO.getGuestionID());
+            // Check if the question informed exists
+            gameDB = this.gameQuestionsRepository.getByGameAndQuestion(answerDTO.getGameID(),
+                    answerDTO.getGuestionID());
 
             // If not return the Not Found Exception
-            if (Objects.isNull(gameDB)){
+            if (Objects.isNull(gameDB)) {
                 throw new NotFoundException("GameQuestion", answerDTO);
             }
             // Get the userId from token to save the audit information
             UUID userID = UUID.fromString(JWTUtil.getUserIdFromToken(token));
-            
+
             // Check if the answer is correct
             // if (Objects.isNull(gameQuestion.getAnswer())){
-            //     throw new NotFoundException("Answer is null.", gameQuestion);
-            // }   
-            
-            Boolean isCorrect = checkIfAnswerIsCorrect(answerDTO.getGuestionID()
-                                                , answerDTO.getOptionAnswered());   
-            
+            // throw new NotFoundException("Answer is null.", gameQuestion);
+            // }
+
+            Boolean isCorrect = checkIfAnswerIsCorrect(answerDTO.getGuestionID(), answerDTO.getOptionAnswered());
+
             Option answer = questionService.getOptionByID(answerDTO.getOptionAnswered());
 
-            // Update gamequestion data 
+            // Update gamequestion data
             gameDB.setUpdatedDate(new Date());
             gameDB.setUpdatedBy(userID);
             gameDB.setTime(answerDTO.getAnswerTime());
             gameDB.setScore(calculateScoreByAnswer(answerDTO.getAnswerTime(), isCorrect));
             gameDB.setIsCorrect(isCorrect);
             gameDB.setAnswer(answer);
-    
+
             // Save the updated object on database
             gameDB = this.gameQuestionsRepository.save(gameDB);
-            
+
         } catch (Throwable t) {
             throw HandleException.handleException(t, answerDTO, "GameQuestion/update");
         }
         // return with the DTO mapped
-        return modelMapper.map(gameDB, GameQuestionsDTO.class) ;
-    } 
-
+        return modelMapper.map(gameDB, GameQuestionsDTO.class);
+    }
 
     @SuppressWarnings("null")
-    public GameDTO finishGame(UUID gameID, String token){
+    public GameDTO finishGame(UUID gameID, String token) {
         // Check if the game informed exists
         Game game;
         try {
-            game = this.gameRepository.findById(gameID).orElse(null);    
+            game = this.gameRepository.findById(gameID).orElse(null);
             // If not return the Not Found Exception
-            if(Objects.isNull(game)){
+            if (Objects.isNull(game)) {
                 throw new NotFoundException("FinishGame", gameID);
             }
             // Get the user throught token to audit information
@@ -296,20 +281,19 @@ public class GameService {
         return modelMapper.map(game, GameDTO.class);
     }
 
-
     private Boolean checkIfAnswerIsCorrect(UUID questionID, UUID optionID) {
-        // Inizializated the result 
+        // Inizializated the result
         Boolean result = false;
         try {
             // Get the correct option
             Option correctOption = this.questionService.getCorrectOptionByQuestion(questionID);
-            
+
             // Check if the option informed is correct
-            if (Objects.equals(correctOption.getId() , optionID)){
+            if (Objects.equals(correctOption.getId(), optionID)) {
                 result = true;
             }
-            
-        // If any error return treated exception
+
+            // If any error return treated exception
         } catch (Throwable t) {
             throw HandleException.handleException(t, optionID, "GameQuestion");
         }
@@ -317,27 +301,24 @@ public class GameService {
         return result;
     }
 
-
-    /**Responsable for calculate the score for each question
-    // If the answer is correct win 50 pts
-    // The rest of the points are calculate in accord of the time
-    // for each 1 seg the score decrease 5 pts startinf with 50 pts
-    // The max score is 100 pts
-    **/
-    private int calculateScoreByAnswer(int time, Boolean isCorrect){
+    /**
+     * Responsable for calculate the score for each question
+     * // If the answer is correct win 50 pts
+     * // The rest of the points are calculate in accord of the time
+     * // for each 1 seg the score decrease 5 pts startinf with 50 pts
+     * // The max score is 100 pts
+     **/
+    private int calculateScoreByAnswer(int time, Boolean isCorrect) {
 
         int result = 0;
-        try{
+        try {
             if (isCorrect) {
-                result = (result + 50) + (time/10)*5;
+                result = (result + 50) + (time / 10) * 5;
             }
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             throw HandleException.handleException(t, time, "calculateScoreByAnswer");
         }
         return result;
     }
 
-
-    
-    
 }
