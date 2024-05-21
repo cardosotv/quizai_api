@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cardosotv</groupId>
-	<artifactId>first-spring-app</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>cardoso-quizai-api</artifactId>
+	<version>0.0.2</version>
 	<name>first-spring-app</name>
-	<description>Demo project for Spring Boot</description>
+	<description>API for a Quiz AI</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -34,6 +34,7 @@
 			<version>42.7.2</version>
 			<!-- <version>42.7.1</version> 42.6.1 -->
 		</dependency>
+		 <!-- Other dependencies -->
 		<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
 		<!-- <dependency>
 			<groupId>commons-logging</groupId>

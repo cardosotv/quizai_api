@@ -35,65 +35,53 @@ public class GameController {
 
     @Autowired
     private final GameService gameService;
-    
 
-    public GameController(GameService gameService){
+    public GameController(GameService gameService) {
         this.gameService = gameService;
     }
 
-
     @PostMapping
-    @Operation(summary = "Post request for Game Domain."
-         , description = "Endpoint to create the game.")
-    @ApiResponse(responseCode = "200"
-                , description = "Game created!")
-    public ResponseEntity<GameDTO> createGame(@RequestParam UUID idSubject
-                                        , @RequestHeader("token") String token){
+    @Operation(summary = "Post request for Game Domain.", description = "Endpoint to create the game.")
+    @ApiResponse(responseCode = "200", description = "Game created!")
+    public ResponseEntity<GameDTO> createGame(@RequestParam UUID idSubject, @RequestHeader("token") String token) {
         GameDTO result;
         try {
             result = this.gameService.createGame(idSubject, token);
         } catch (Throwable t) {
-           throw HandleException.handleException(t, idSubject, "Game");
+            throw HandleException.handleException(t, idSubject, "Game");
         }
         return ResponseEntity.ok(result);
     }
 
-    
     @GetMapping
-    @Operation(summary = "Get request for Games."
-    , description =  "Endpoint in charge of return a list of all games.")
-    @ApiResponse(responseCode =  "200", description =  "Games List found.")
-    public ResponseEntity<List<GameDTO>> getAllGames( 
-                                        @RequestParam(defaultValue="null") String userid
-                                        , @RequestParam(defaultValue="0") int page
-                                        , @RequestParam(defaultValue="5") int size
-                                        , @RequestHeader("token") String token){
-        
+    @Operation(summary = "Get request for Games.", description = "Endpoint in charge of return a list of all games.")
+    @ApiResponse(responseCode = "200", description = "Games List found.")
+    public ResponseEntity<List<GameDTO>> getAllGames(
+            @RequestParam(defaultValue = "null") String userid, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size, @RequestHeader("token") String token) {
+
         List<GameDTO> result;
         UUID id;
         try {
             // Null treatment
-            if (Objects.equals(userid, "null")){
+            if (Objects.equals(userid, "null")) {
                 id = null;
             } else {
                 id = UUID.fromString(userid.toString());
             }
-            result = this.gameService.getAllGames((UUID )id, null, page, size);
+            result = this.gameService.getAllGames((UUID) id, null, page, size);
         } catch (Throwable t) {
             throw HandleException.handleException(t, token, "Games");
         }
         return ResponseEntity.ok(result);
     }
 
-
-
     @GetMapping("/top10")
-    @Operation(summary = "Get request for Top 10 Games."
-    , description =  "Endpoint in charge of return a list of top 10 games all times.")
-    @ApiResponse(responseCode =  "200", description =  "Top 10 Games List found.")
-    public ResponseEntity<List<GameDTO>> getTopTenGamesEver( 
-                                             @RequestHeader("token") String token){
-        
+    @Operation(summary = "Get request for Top 10 Games.", description = "Endpoint in charge of return a list of top 10 games all times.")
+    @ApiResponse(responseCode = "200", description = "Top 10 Games List found.")
+    public ResponseEntity<List<GameDTO>> getTopTenGamesEver(
+            @RequestHeader("token") String token) {
+
         List<GameDTO> result;
         try {
             result = this.gameService.getAllGames(null, true, 0, 10);
@@ -103,14 +91,10 @@ public class GameController {
         return ResponseEntity.ok(result);
     }
 
-
-
     @GetMapping("/{gameId}")
-    @Operation(summary = "Get request for Games by ID."
-    , description =  "Endpoint in charge of return the game by ID")
-    @ApiResponse(responseCode =  "200", description =  "Game found.")
-    public ResponseEntity<GameDTO> getAllGames( @PathVariable UUID gameId 
-                                    , @RequestHeader("token") String token){
+    @Operation(summary = "Get request for Games by ID.", description = "Endpoint in charge of return the game by ID")
+    @ApiResponse(responseCode = "200", description = "Game found.")
+    public ResponseEntity<GameDTO> getAllGames(@PathVariable UUID gameId, @RequestHeader("token") String token) {
         GameDTO result;
         try {
             result = this.gameService.getGameByID(gameId);
@@ -120,13 +104,10 @@ public class GameController {
         return ResponseEntity.ok(result);
     }
 
-
     @DeleteMapping("/{gameId}")
-    @Operation(summary = "Delete request for Games by ID."
-    , description =  "Endpoint in charge of delete the game by ID")
-    @ApiResponse(responseCode =  "200", description =  "Game deleted.")
-    public ResponseEntity<String> deleteGameByID( @PathVariable UUID gameId 
-                                    , @RequestHeader("token") String token){
+    @Operation(summary = "Delete request for Games by ID.", description = "Endpoint in charge of delete the game by ID")
+    @ApiResponse(responseCode = "200", description = "Game deleted.")
+    public ResponseEntity<String> deleteGameByID(@PathVariable UUID gameId, @RequestHeader("token") String token) {
 
         try {
             this.gameService.deleteGameByID(gameId);
@@ -136,13 +117,11 @@ public class GameController {
         return ResponseEntity.ok("Delete request executed with success.");
     }
 
-
     @PutMapping("/question")
-    @Operation(summary = "Put request for Games Question."
-    , description =  "Endpoint in charge of update the game questions with the user answer.")
-    @ApiResponse(responseCode =  "200", description =  "Game Question Updated.")
-    public ResponseEntity<GameQuestionsDTO> updateGameQuestion( @RequestBody AnswerDTO answer
-                                                        , @RequestHeader("token") String token){
+    @Operation(summary = "Put request for Games Question.", description = "Endpoint in charge of update the game questions with the user answer.")
+    @ApiResponse(responseCode = "200", description = "Game Question Updated.")
+    public ResponseEntity<GameQuestionsDTO> updateGameQuestion(@RequestBody AnswerDTO answer,
+            @RequestHeader("token") String token) {
         GameQuestionsDTO result;
         try {
             result = this.gameService.updateGameQuestions(answer, token);
@@ -153,11 +132,9 @@ public class GameController {
     }
 
     @PutMapping("/{gameID}")
-    @Operation(summary = "Put request to finish the game."
-    , description =  "Endpoint in charge of end the game when the user finish of answer the questions.")
-    @ApiResponse(responseCode =  "200", description =  "Game Finished with Success.")
-    public ResponseEntity<GameDTO> finishGame( @PathVariable UUID gameID
-                                                        , @RequestHeader("token") String token){
+    @Operation(summary = "Put request to finish the game.", description = "Endpoint in charge of end the game when the user finish of answer the questions.")
+    @ApiResponse(responseCode = "200", description = "Game Finished with Success.")
+    public ResponseEntity<GameDTO> finishGame(@PathVariable UUID gameID, @RequestHeader("token") String token) {
         GameDTO result;
         try {
             result = this.gameService.finishGame(gameID, token);
